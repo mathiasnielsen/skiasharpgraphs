@@ -23,11 +23,21 @@
             Text="Welcome to cool data visualization!"
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
-        
-        <skia:SKCanvasView
-            Grid.Row="1"
-            x:Name="barChart"
-            PaintSurface="OnPaintSurface"/>
+
+        <Grid
+            Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="*"/>
+                <RowDefinition
+                    Height="*"/>
+            </Grid.RowDefinitions>
+
+            <skia:SKCanvasView
+                x:Name="barChart"
+                PaintSurface="OnPaintSurface"/>
+              
+        </Grid>
 
         <Button
             Grid.Row="2"
