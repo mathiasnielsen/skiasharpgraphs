@@ -38,6 +38,7 @@ namespace SkiaSharpSimpleCharts
             InitializeComponent();
 
             viewModel = new SkiaSharpSimpleChartsViewModel();
+            BindingContext = viewModel;
         }
 
         /// <summary>
@@ -61,6 +62,9 @@ namespace SkiaSharpSimpleCharts
             // Step 4 - Animate bar chart
             canvas.Clear(SKColors.Orange);
             AnimateBars(canvas, args.Info);
+
+            // Step 5 - Control and MVVM
+            // See control
         }
 
         private void AnimateBars(SKCanvas canvas, SKImageInfo info)
@@ -69,7 +73,7 @@ namespace SkiaSharpSimpleCharts
             var margin = 40;
             var textHeight = 60;
 
-            var data = viewModel.GetDummyData();
+            var data = viewModel.ChartData;
             var chart = new Chart() { Entries = data, ChartColor = SKColors.Blue };
 
             var heighestBarValue = chart.Entries.Max(bar => bar.Value);
@@ -112,7 +116,7 @@ namespace SkiaSharpSimpleCharts
             var margin = 40;
             var textHeight = 60;
 
-            var data = viewModel.GetDummyData();
+            var data = viewModel.ChartData;
             var chart = new Chart() { Entries = data, ChartColor = SKColors.Blue };
 
             var heighestBarValue = chart.Entries.Max(bar => bar.Value);
@@ -148,7 +152,7 @@ namespace SkiaSharpSimpleCharts
 
         private void DrawBars(SKCanvas canvas, SKImageInfo info)
         {
-            var data = viewModel.GetDummyData();
+            var data = viewModel.ChartData;
             var chart = new Chart() { Entries = data, ChartColor = SKColors.Blue };
 
             var heighestBarValue = chart.Entries.Max(bar => bar.Value);
