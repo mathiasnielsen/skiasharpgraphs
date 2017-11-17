@@ -7,49 +7,59 @@
     xmlns:chart="clr-namespace:SkiaSharpSimpleCharts.Controls;assembly=SkiaSharpSimpleCharts"
     x:Class="SkiaSharpSimpleCharts.SkiaSharpSimpleChartsPage">
 
-    <!-- CONTAINER -->
-    <Grid
-        BackgroundColor="White"
-        Padding="20, 40">
-        <Grid.RowDefinitions>
-            <RowDefinition
-                Height="auto"/>
-            <RowDefinition
-                Height="*"/>
-            <RowDefinition
-                Height="auto"/>
-        </Grid.RowDefinitions>
-        
-        <Label 
-            Text="Welcome to cool data visualization!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+    <!-- MASTER CONTAINER -->
+    <Grid>
 
+        <!-- CONTENT CONTAINER -->
         <Grid
-            Grid.Row="1">
+            BackgroundColor="White"
+            Padding="20, 40">
             <Grid.RowDefinitions>
                 <RowDefinition
-                    Height="*"/>
+                    Height="auto"/>
                 <RowDefinition
                     Height="*"/>
+                <RowDefinition
+                    Height="auto"/>
             </Grid.RowDefinitions>
+            
+            <Label 
+                Text="Welcome to cool data visualization!"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" />
 
-            <skia:SKCanvasView
-                x:Name="barChart"
-                PaintSurface="OnPaintSurface"/>
+            <Grid
+                Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="*"/>
+                    <RowDefinition
+                        Height="*"/>
+                </Grid.RowDefinitions>
 
-            <chart:ChartView
-                Grid.Row="1"
-                BarData="{Binding ChartData}"
-                x:Name="bindableBarChart"/>
-              
+                <skia:SKCanvasView
+                    x:Name="barChart"
+                    PaintSurface="OnPaintSurface"/>
+
+                <chart:ChartView
+                    Grid.Row="1"
+                    BarData="{Binding ChartData}"
+                    x:Name="bindableBarChart"/>
+                  
+            </Grid>
+
+            <Button
+                Grid.Row="2"
+                Text="Refresh"
+                Command="{Binding RefreshCommand}"
+                Clicked="OnRefreshClicked"/>
         </Grid>
 
-        <Button
-            Grid.Row="2"
-            Text="Refresh"
-            Command="{Binding RefreshCommand}"
-            Clicked="OnRefreshClicked"/>
+        <Grid
+          x:Name="FlashView"
+          IsVisible="false"
+          BackgroundColor="White"/>
+        
     </Grid>
     
 </ContentPage>

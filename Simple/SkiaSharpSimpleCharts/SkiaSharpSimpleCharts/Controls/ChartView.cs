@@ -12,6 +12,7 @@ namespace SkiaSharpSimpleCharts.Controls
     {
         private static float animationProgress = 1.0f;
         private static float easingAnimationProgress = 1.0f;
+        private static bool reactedOnNewData;
 
         private SKPaint barPaint = new SKPaint
         {
@@ -37,6 +38,10 @@ namespace SkiaSharpSimpleCharts.Controls
         {
             PaintSurface += OnPaintCanvas;
         }
+
+        public event EventHandler GotData;
+
+        public event EventHandler ShowsABar;
 
         public static readonly BindableProperty BarDataProperty = BindableProperty.Create(nameof(BarData), typeof(List<BarData>), typeof(List<BarData>), null, propertyChanged: OnChartChanged);
 
@@ -69,22 +74,24 @@ namespace SkiaSharpSimpleCharts.Controls
         {
             easingAnimationProgress = 0.0f;
             animationProgress = 0.0f;
+            reactedOnNewData = false;
 
             // Runs 60 times pr. second.
             Device.StartTimer(TimeSpan.FromSeconds(1.0f / 60), () =>
             {
-                animationProgress += 0.025f;
                 easingAnimationProgress = (float)Easing.CubicIn.Ease(animationProgress);
-
-                // Redraw the chart
-                canvas.InvalidateSurface();
 
                 if (animationProgress >= 1.0f)
                 {
                     animationProgress = 1.0f;
                     easingAnimationProgress = 1.0f;
+                    canvas.InvalidateSurface();
                     return false;
                 }
+
+                // Redraw the chart
+                canvas.InvalidateSurface();
+                animationProgress += 0.025f;
 
                 return true;
             });
@@ -92,6 +99,12 @@ namespace SkiaSharpSimpleCharts.Controls
 
         private void AnimateBars(SKCanvas canvas, SKImageInfo info)
         {
+            if (reactedOnNewData == false)
+            {
+                GotData.Invoke(null, null);
+                reactedOnNewData = true;
+            }
+
             // Applying decorations 
             var margin = 40;
             var textHeight = 60;

@@ -39,6 +39,19 @@ namespace SkiaSharpSimpleCharts
 
             viewModel = new SkiaSharpSimpleChartsViewModel();
             BindingContext = viewModel;
+
+            bindableBarChart.GotData += (sender, e) => InitiateFlash();
+        }
+
+        private async void InitiateFlash()
+        {
+            FlashView.IsVisible = true;
+            FlashView.IsEnabled = false;
+            FlashView.Opacity = 1;
+
+            await FlashView.FadeTo(0, 1000, null);
+
+            Device.BeginInvokeOnMainThread(() => FlashView.IsVisible = false);
         }
 
         /// <summary>
