@@ -38,6 +38,8 @@ namespace SkiaSharpSimpleCharts.Client.Core
 
         private async Task GetDataFromApiAsync()
         {
+            ChartData = new List<BarData>();
+
             var data = await httpRequestExecutor.Get<List<Lightning>>(Api);
 
             var barData = ConvertDataToBarData(data);
@@ -65,24 +67,14 @@ namespace SkiaSharpSimpleCharts.Client.Core
             return barData;
         }
 
-        private List<BarData> GetSimulationData()
-        {
-            return new List<BarData>()
-            {
-                new BarData() { Title = "SF", Value = 300 },
-                new BarData() { Title = "A", Value = 800 },
-                new BarData() { Title = "V", Value = 600 },
-                new BarData() { Title = "R", Value = 1400 }
-            };
-        }
-
         private List<BarData> GetDummyData()
         {
             return new List<BarData>()
             {
-                new BarData() { Title = "SF", Value = 100 },
+                new BarData() { Title = "SF", Value = 1900 },
                 new BarData() { Title = "A", Value = 500 },
-                new BarData() { Title = "V", Value = 400 }
+                new BarData() { Title = "V", Value = 400 },
+                new BarData() { Title = "B", Value = 1400 }
             };
         }
     }

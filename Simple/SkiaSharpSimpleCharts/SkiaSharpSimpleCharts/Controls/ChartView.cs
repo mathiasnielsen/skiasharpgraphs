@@ -123,6 +123,16 @@ namespace SkiaSharpSimpleCharts.Controls
         {
             InvokeEventsIfNeeded();
 
+            if (BarData == null)
+            {
+                return;
+            }
+
+            if (BarData.Any() == false)
+            {
+                return;
+            }
+
             var heighestBarValue = BarData.Max(bar => bar.Value);
 
             var canvasWidth = info.Width - WidthMargin;
