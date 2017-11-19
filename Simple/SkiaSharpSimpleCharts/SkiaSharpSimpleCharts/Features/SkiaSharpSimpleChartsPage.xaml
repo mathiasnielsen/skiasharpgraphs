@@ -37,7 +37,7 @@
                 VerticalOptions="Center"
                 HorizontalOptions="Fill"/>
 
-            <!-- STEP 3 -->
+            <!-- STEP 2 -->
             <chart:ChartView
                 IsVisible="false"
                 x:Name="chart2"

@@ -65,6 +65,7 @@ namespace SkiaSharpSimpleCharts.Controls
 
         public static readonly BindableProperty BarDataProperty = BindableProperty.Create(nameof(BarData), typeof(List<BarData>), typeof(List<BarData>), null, propertyChanged: OnChartChanged);
 
+        // Property to bind to in Xaml
         public List<BarData> BarData
         {
             get { return (List<BarData>)GetValue(BarDataProperty); }
@@ -73,23 +74,27 @@ namespace SkiaSharpSimpleCharts.Controls
 
         private static void OnChartChanged(BindableObject bindable, object oldValue, object newValue)
         {
+            // Start animation process when chart changed.
             var chartView = ((ChartView)bindable);
-            StartAnimation(chartView);
+            StartAnimationProcess(chartView);
         }
 
-        private static void StartAnimation(ChartView charView)
+        private static void StartAnimationProcess(ChartView charView)
         {
-            easingAnimationProgress = 0.0f;
+            // Reset animation parameters
             animationProgress = 0.0f;
-            reactedOnNewData = false;
+            easingAnimationProgress = 0.0f;
             currentShownBarIndex = 0;
+            reactedOnNewData = false;
 
             // Runs 60 times pr. second.
             Device.StartTimer(TimeSpan.FromSeconds(1.0f / 60), () =>
             {
+                // Get new animation values
                 easingAnimationProgress = (float)Easing.CubicIn.Ease(animationProgress);
                 currentShownBarIndex = (int)(charView.BarData.Count * animationProgress);
 
+                // If finished, set animation to 1.0f
                 if (animationProgress >= 1.0f)
                 {
                     animationProgress = 1.0f;
@@ -99,7 +104,10 @@ namespace SkiaSharpSimpleCharts.Controls
                     return false;
                 }
 
+                // Redraw the canvas
                 charView.InvalidateSurface();
+
+                // Increment the animation process
                 animationProgress += animationInterval;
 
                 return true;
@@ -108,11 +116,12 @@ namespace SkiaSharpSimpleCharts.Controls
 
         private void OnPaintCanvas(object sender, SKPaintSurfaceEventArgs e)
         {
+            // 1. Simple canvas
             var surface = e.Surface;
             var canvas = surface.Canvas;
-
             canvas.Clear(backgroundColor);
 
+            // 2. Draw bars if we have data
             if (BarData != null)
             {
                 AnimateLightningBars(canvas, e.Info);
@@ -121,8 +130,6 @@ namespace SkiaSharpSimpleCharts.Controls
 
         private void AnimateLightningBars(SKCanvas canvas, SKImageInfo info)
         {
-            InvokeEventsIfNeeded();
-
             if (BarData == null)
             {
                 return;
@@ -133,16 +140,24 @@ namespace SkiaSharpSimpleCharts.Controls
                 return;
             }
 
+            // 3. Invoke events, to initiate flashes.
+            InvokeEventsBasedOnAnimationType();
+
+            // 4. Find highest value to calculate procentage height
             var heighestBarValue = BarData.Max(bar => bar.Value);
 
+            // 5. Get widths
             var canvasWidth = info.Width - WidthMargin;
             var barWidth = (canvasWidth / BarData.Count) - WidthMargin;
 
+            // 6. Get heights
             var canvasHeight = info.Height - HeightMargin * 2;
             var barContentHeight = canvasHeight - BarTitleTextHeight - BarTitleTextHeight;
 
+            // 7. Draw the Bars
             for (int index = 0; index < BarData.Count; index++)
             {
+                // Animation dependant
                 if (animationType == AnimationTypes.Lightning)
                 {
                     // Only show bars that need to be shown.
@@ -152,9 +167,9 @@ namespace SkiaSharpSimpleCharts.Controls
                     }
                 }
 
+                // Get height
                 var currentBar = BarData[index];
                 var procentageHeight = (float)currentBar.Value / heighestBarValue;
-
                 int barHeight = 0;
                 switch (animationType)
                 {
@@ -167,26 +182,31 @@ namespace SkiaSharpSimpleCharts.Controls
                         break;
                 }
 
-                // Find start X
+                // Find bar start positions
                 var startX = WidthMargin + (WidthMargin * index) + index * barWidth;
                 var startY = info.Height - HeightMargin - BarTitleTextHeight;
 
+                // Apply a gradient shader
                 ApplyGradientShader(startY, barHeight);
 
+                // Draw bars
                 canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), BarPaint);
                 canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), BarStrokePaint);
 
+                // Find text start positions
                 var startTextX = startX + (barWidth / 2);
                 var startTextY = startY + BarTitleTextHeight;
 
+                // Fade-in the texts
                 TitleTextPaint.Color = SKColors.Black.WithAlpha((byte)(byte.MaxValue * easingAnimationProgress));
 
+                // Draw the texts
                 canvas.DrawText(currentBar.Value.ToString(), startTextX, startY - barHeight - 20, ValueTextPaint);
                 canvas.DrawText(currentBar.Title, startTextX, startTextY, TitleTextPaint);
             }
         }
 
-        private void InvokeEventsIfNeeded()
+        private void InvokeEventsBasedOnAnimationType()
         {
             switch (animationType)
             {

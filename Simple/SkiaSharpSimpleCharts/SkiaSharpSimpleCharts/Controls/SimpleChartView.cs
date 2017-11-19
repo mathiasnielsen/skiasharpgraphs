@@ -27,7 +27,6 @@ namespace SkiaSharpSimpleCharts.Controls
             // 1. Simple canvas
             var surface = e.Surface;
             var canvas = surface.Canvas;
-
             canvas.Clear(SKColors.Orange);
 
             // 2. Simple Bars
