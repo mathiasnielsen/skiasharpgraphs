@@ -16,6 +16,7 @@ namespace SkiaSharpSimpleCharts.Controls
         private static float easingAnimationProgress = 1.0f;
         private static bool reactedOnNewData;
         private static int shownBars;
+
         private int oldShownBars;
 
         private SKPaint barPaint = new SKPaint
@@ -31,10 +32,17 @@ namespace SkiaSharpSimpleCharts.Controls
             Color = SKColors.Black
         };
 
-        private SKPaint textPaint = new SKPaint
+        private SKPaint titleTextPaint = new SKPaint
         {
-            TextSize = 30.0f,
+            TextSize = 20.0f,
             Color = SKColors.Black,
+            TextAlign = SKTextAlign.Center
+        };
+
+        private SKPaint valueTextPaint = new SKPaint
+        {
+            TextSize = 12.0f,
+            Color = SKColors.Blue,
             TextAlign = SKTextAlign.Center
         };
 
@@ -120,11 +128,12 @@ namespace SkiaSharpSimpleCharts.Controls
                 {
                     ShowsABar?.Invoke(this, null);
                     oldShownBars = shownBars;
-                }   
+                }
             }
 
             // Applying decorations )
-            var margin = 40;
+            var margin = 20;
+            var heightMargin = 60;
             var textHeight = 60;
 
             var chart = new Chart() { Entries = BarData, ChartColor = SKColors.Blue };
@@ -133,8 +142,8 @@ namespace SkiaSharpSimpleCharts.Controls
 
             // Remove the left margin
             var canvasWidth = info.Width - margin;
-            var canvasHeight = info.Height - margin * 2;
-            var barContentHeight = canvasHeight - textHeight;
+            var canvasHeight = info.Height - heightMargin * 2;
+            var barContentHeight = canvasHeight - heightMargin;
 
             // Takes spacing into account for bar width
             var barWidth = (canvasWidth / chart.Entries.Count) - margin;
@@ -150,11 +159,16 @@ namespace SkiaSharpSimpleCharts.Controls
                 var procentageHeight = (float)currentBar.Value / heighestBarValue;
 
                 // Takes margin into height account
-                var barHeight = (int)(procentageHeight * barContentHeight); // * easingAnimationProgress;
+                var barHeight = (int)(procentageHeight * barContentHeight);
 
                 // Find start X
                 var startX = margin + (margin * index) + index * barWidth;
-                var startY = info.Height - margin - textHeight;
+                var startY = info.Height - heightMargin - textHeight;
+
+                using (var shader = SKShader.CreateLinearGradient(new SKPoint(0, startY), new SKPoint(0, -barHeight), new[] { SKColors.Yellow.WithAlpha(255 / 5), SKColors.Yellow.WithAlpha(255) }, null, SKShaderTileMode.Clamp))
+                {
+                    barPaint.Shader = shader;
+                }
 
                 canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), barPaint);
                 canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), strokePaint);
@@ -162,9 +176,10 @@ namespace SkiaSharpSimpleCharts.Controls
                 var startTextX = startX + (barWidth / 2);
                 var startTextY = startY + textHeight;
 
-                textPaint.Color = SKColors.Black.WithAlpha((byte)(byte.MaxValue * easingAnimationProgress));
+                titleTextPaint.Color = SKColors.Black.WithAlpha((byte)(byte.MaxValue * easingAnimationProgress));
 
-                canvas.DrawText(currentBar.Title, startTextX, startTextY, textPaint);
+                canvas.DrawText(currentBar.Title, startTextX, startTextY, titleTextPaint);
+                canvas.DrawText(currentBar.Value.ToString(), startTextX, startY - barHeight - 20, valueTextPaint);
             }
         }
 
@@ -210,9 +225,9 @@ namespace SkiaSharpSimpleCharts.Controls
                 var startTextX = startX + (barWidth / 2);
                 var startTextY = startY + textHeight;
 
-                textPaint.Color = SKColors.Black.WithAlpha((byte)(byte.MaxValue * easingAnimationProgress));
+                titleTextPaint.Color = SKColors.Black.WithAlpha((byte)(byte.MaxValue * easingAnimationProgress));
 
-                canvas.DrawText(currentBar.Title, startTextX, startTextY, textPaint);
+                canvas.DrawText(currentBar.Title, startTextX, startTextY, titleTextPaint);
             }
         }
     }
