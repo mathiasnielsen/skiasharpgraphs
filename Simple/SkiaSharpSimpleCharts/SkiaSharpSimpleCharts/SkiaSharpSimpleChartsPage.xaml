@@ -30,20 +30,12 @@
 
             <Grid
                 Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition
-                        Height="*"/>
-                    <RowDefinition
-                        Height="*"/>
-                </Grid.RowDefinitions>
-
-                <skia:SKCanvasView
-                    x:Name="barChart"
-                    PaintSurface="OnPaintSurface"/>
 
                 <chart:ChartView
-                    Grid.Row="1"
                     BarData="{Binding ChartData}"
+                    HeightRequest="400"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Fill"
                     x:Name="bindableBarChart"/>
                   
             </Grid>
@@ -51,8 +43,7 @@
             <Button
                 Grid.Row="2"
                 Text="Refresh"
-                Command="{Binding RefreshCommand}"
-                Clicked="OnRefreshClicked"/>
+                Command="{Binding RefreshCommand}"/>
         </Grid>
 
         <Grid

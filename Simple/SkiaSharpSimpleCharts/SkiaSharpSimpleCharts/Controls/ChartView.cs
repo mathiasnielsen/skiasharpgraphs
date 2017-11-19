@@ -10,44 +10,52 @@ namespace SkiaSharpSimpleCharts.Controls
 {
     public class ChartView : SKCanvasView
     {
-        private const float AnimationInterval = 0.01f;
+        private const float WidthMargin = 20;
+        private const float HeightMargin = 60;
+        private const float BarTitleTextHeight = 40;
 
+        private static float animationInterval = 0.01f;
         private static float animationProgress = 1.0f;
         private static float easingAnimationProgress = 1.0f;
         private static bool reactedOnNewData;
-        private static int shownBars;
+        private static int currentShownBarIndex;
 
+        private AnimationTypes animationType;
+        private SKColor backgroundColor;
         private int oldShownBars;
 
-        private SKPaint barPaint = new SKPaint
+        private readonly SKPaint BarPaint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
-            Color = SKColors.Blue
+            Color = SKColors.Yellow
         };
 
-        private SKPaint strokePaint = new SKPaint
+        private readonly SKPaint BarStrokePaint = new SKPaint
         {
             Style = SKPaintStyle.Stroke,
-            StrokeWidth = 2,
+            StrokeWidth = 4,
             Color = SKColors.Black
         };
 
-        private SKPaint titleTextPaint = new SKPaint
+        private readonly SKPaint TitleTextPaint = new SKPaint
         {
             TextSize = 20.0f,
             Color = SKColors.Black,
             TextAlign = SKTextAlign.Center
         };
 
-        private SKPaint valueTextPaint = new SKPaint
+        private readonly SKPaint ValueTextPaint = new SKPaint
         {
-            TextSize = 12.0f,
-            Color = SKColors.Blue,
+            TextSize = 16.0f,
+            Color = SKColors.Black,
             TextAlign = SKTextAlign.Center
         };
 
         public ChartView()
         {
+            backgroundColor = SKColors.LightGray;
+            animationType = AnimationTypes.Lightning;
+
             PaintSurface += OnPaintCanvas;
         }
 
@@ -69,165 +77,149 @@ namespace SkiaSharpSimpleCharts.Controls
             StartAnimation(chartView);
         }
 
-        private void OnPaintCanvas(object sender, SKPaintSurfaceEventArgs e)
-        {
-            var surface = e.Surface;
-            var canvas = surface.Canvas;
-
-            canvas.Clear(SKColors.Orange);
-
-            if (BarData != null)
-            {
-                //AnimateBars(canvas, e.Info);
-                AnimateLightningBars(canvas, e.Info);
-            }
-        }
-
         private static void StartAnimation(ChartView charView)
         {
             easingAnimationProgress = 0.0f;
             animationProgress = 0.0f;
             reactedOnNewData = false;
-            shownBars = 0;
+            currentShownBarIndex = 0;
 
             // Runs 60 times pr. second.
             Device.StartTimer(TimeSpan.FromSeconds(1.0f / 60), () =>
             {
                 easingAnimationProgress = (float)Easing.CubicIn.Ease(animationProgress);
-
-                var currentShownIndex = (double)charView.BarData.Count * animationProgress;
-                shownBars = (int)currentShownIndex;
+                currentShownBarIndex = (int)(charView.BarData.Count * animationProgress);
 
                 if (animationProgress >= 1.0f)
                 {
                     animationProgress = 1.0f;
                     easingAnimationProgress = 1.0f;
                     charView.InvalidateSurface();
+
                     return false;
                 }
 
-                // Redraw the chart
                 charView.InvalidateSurface();
-                animationProgress += AnimationInterval;
+                animationProgress += animationInterval;
 
                 return true;
             });
         }
 
-        private void AnimateLightningBars(SKCanvas canvas, SKImageInfo info)
+        private void OnPaintCanvas(object sender, SKPaintSurfaceEventArgs e)
         {
-            if (reactedOnNewData == false)
+            var surface = e.Surface;
+            var canvas = surface.Canvas;
+
+            canvas.Clear(backgroundColor);
+
+            if (BarData != null)
             {
-                ShowsABar?.Invoke(this, null);
-                oldShownBars = shownBars;
-                reactedOnNewData = true;
-            }
-            else
-            {
-                if (oldShownBars != shownBars && shownBars < BarData?.Count)
-                {
-                    ShowsABar?.Invoke(this, null);
-                    oldShownBars = shownBars;
-                }
-            }
-
-            // Applying decorations )
-            var margin = 20;
-            var heightMargin = 60;
-            var textHeight = 60;
-
-            var chart = new Chart() { Entries = BarData, ChartColor = SKColors.Blue };
-
-            var heighestBarValue = chart.Entries.Max(bar => bar.Value);
-
-            // Remove the left margin
-            var canvasWidth = info.Width - margin;
-            var canvasHeight = info.Height - heightMargin * 2;
-            var barContentHeight = canvasHeight - heightMargin;
-
-            // Takes spacing into account for bar width
-            var barWidth = (canvasWidth / chart.Entries.Count) - margin;
-
-            for (int index = 0; index < chart.Entries.Count; index++)
-            {
-                if (index > shownBars)
-                {
-                    return;
-                }
-
-                var currentBar = chart.Entries[index];
-                var procentageHeight = (float)currentBar.Value / heighestBarValue;
-
-                // Takes margin into height account
-                var barHeight = (int)(procentageHeight * barContentHeight);
-
-                // Find start X
-                var startX = margin + (margin * index) + index * barWidth;
-                var startY = info.Height - heightMargin - textHeight;
-
-                using (var shader = SKShader.CreateLinearGradient(new SKPoint(0, startY), new SKPoint(0, -barHeight), new[] { SKColors.Yellow.WithAlpha(255 / 5), SKColors.Yellow.WithAlpha(255) }, null, SKShaderTileMode.Clamp))
-                {
-                    barPaint.Shader = shader;
-                }
-
-                canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), barPaint);
-                canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), strokePaint);
-
-                var startTextX = startX + (barWidth / 2);
-                var startTextY = startY + textHeight;
-
-                titleTextPaint.Color = SKColors.Black.WithAlpha((byte)(byte.MaxValue * easingAnimationProgress));
-
-                canvas.DrawText(currentBar.Title, startTextX, startTextY, titleTextPaint);
-                canvas.DrawText(currentBar.Value.ToString(), startTextX, startY - barHeight - 20, valueTextPaint);
+                AnimateLightningBars(canvas, e.Info);
             }
         }
 
-        private void AnimateBars(SKCanvas canvas, SKImageInfo info)
+        private void AnimateLightningBars(SKCanvas canvas, SKImageInfo info)
         {
-            if (reactedOnNewData == false)
+            InvokeEventsIfNeeded();
+
+            var heighestBarValue = BarData.Max(bar => bar.Value);
+
+            var canvasWidth = info.Width - WidthMargin;
+            var barWidth = (canvasWidth / BarData.Count) - WidthMargin;
+
+            var canvasHeight = info.Height - HeightMargin * 2;
+            var barContentHeight = canvasHeight - BarTitleTextHeight - BarTitleTextHeight;
+
+            for (int index = 0; index < BarData.Count; index++)
             {
-                GotData?.Invoke(null, null);
-                reactedOnNewData = true;
-            }
+                if (animationType == AnimationTypes.Lightning)
+                {
+                    // Only show bars that need to be shown.
+                    if (index > currentShownBarIndex)
+                    {
+                        return;
+                    }
+                }
 
-            // Applying decorations 
-            var margin = 40;
-            var textHeight = 60;
-
-            var chart = new Chart() { Entries = BarData, ChartColor = SKColors.Blue };
-
-            var heighestBarValue = chart.Entries.Max(bar => bar.Value);
-
-            // Remove the left margin
-            var canvasWidth = info.Width - margin;
-            var canvasHeight = info.Height - margin * 2;
-            var barContentHeight = canvasHeight - textHeight;
-
-            // Takes spacing into account for bar width
-            var barWidth = (canvasWidth / chart.Entries.Count) - margin;
-
-            for (int index = 0; index < chart.Entries.Count; index++)
-            {
-                var currentBar = chart.Entries[index];
+                var currentBar = BarData[index];
                 var procentageHeight = (float)currentBar.Value / heighestBarValue;
 
-                // Takes margin into height account
-                var barHeight = (int)(procentageHeight * barContentHeight) * easingAnimationProgress;
+                int barHeight = 0;
+                switch (animationType)
+                {
+                    case AnimationTypes.Lightning:
+                        barHeight = (int)(procentageHeight * barContentHeight);
+                        break;
+
+                    case AnimationTypes.SlideUp:
+                        barHeight = (int)(procentageHeight * barContentHeight * easingAnimationProgress);
+                        break;
+                }
 
                 // Find start X
-                var startX = margin + (margin * index) + index * barWidth;
-                var startY = info.Height - margin - textHeight;
+                var startX = WidthMargin + (WidthMargin * index) + index * barWidth;
+                var startY = info.Height - HeightMargin - BarTitleTextHeight;
 
-                canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), barPaint);
-                canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), strokePaint);
+                ApplyGradientShader(startY, barHeight);
+
+                canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), BarPaint);
+                canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), BarStrokePaint);
 
                 var startTextX = startX + (barWidth / 2);
-                var startTextY = startY + textHeight;
+                var startTextY = startY + BarTitleTextHeight;
 
-                titleTextPaint.Color = SKColors.Black.WithAlpha((byte)(byte.MaxValue * easingAnimationProgress));
+                TitleTextPaint.Color = SKColors.Black.WithAlpha((byte)(byte.MaxValue * easingAnimationProgress));
 
-                canvas.DrawText(currentBar.Title, startTextX, startTextY, titleTextPaint);
+                canvas.DrawText(currentBar.Value.ToString(), startTextX, startY - barHeight - 20, ValueTextPaint);
+                canvas.DrawText(currentBar.Title, startTextX, startTextY, TitleTextPaint);
+            }
+        }
+
+        private void InvokeEventsIfNeeded()
+        {
+            switch (animationType)
+            {
+                case AnimationTypes.Lightning:
+                    if (reactedOnNewData == false)
+                    {
+                        ShowsABar?.Invoke(this, null);
+                        oldShownBars = currentShownBarIndex;
+                        reactedOnNewData = true;
+                    }
+                    else
+                    {
+                        var amountOfBarChanged = oldShownBars != currentShownBarIndex;
+                        var shouldInvokeShowsABar = amountOfBarChanged && currentShownBarIndex < BarData?.Count;
+                        if (shouldInvokeShowsABar)
+                        {
+                            ShowsABar?.Invoke(this, null);
+                            oldShownBars = currentShownBarIndex;
+                        }
+                    }
+                    break;
+
+                case AnimationTypes.SlideUp:
+                    if (reactedOnNewData == false)
+                    {
+                        GotData?.Invoke(this, null);
+                        oldShownBars = currentShownBarIndex;
+                        reactedOnNewData = true;
+                    }
+                    break;
+            }
+        }
+
+        private void ApplyGradientShader(float barY, float barHeight)
+        {
+            using (var shader = SKShader.CreateLinearGradient(
+                new SKPoint(0, barY),
+                new SKPoint(0, -barHeight),
+                new[] { BarPaint.Color.WithAlpha(255 / 5), BarPaint.Color.WithAlpha(255) },
+                null,
+                SKShaderTileMode.Clamp))
+            {
+                BarPaint.Shader = shader;
             }
         }
     }

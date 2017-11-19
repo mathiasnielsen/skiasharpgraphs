@@ -9,7 +9,9 @@ namespace SkiaSharpSimpleCharts.Client.Core
     public class SkiaSharpSimpleChartsViewModel : ViewModelBase
     {
         private const string Api = "http://webapplication220171118090730.azurewebsites.net/getlightning";
-        private HttpRequestExecutor httpRequestExecutor;
+
+        private readonly HttpRequestExecutor httpRequestExecutor;
+
         private List<BarData> chartData;
 
         public SkiaSharpSimpleChartsViewModel()
@@ -38,6 +40,13 @@ namespace SkiaSharpSimpleCharts.Client.Core
         {
             var data = await httpRequestExecutor.Get<List<Lightning>>(Api);
 
+            var barData = ConvertDataToBarData(data);
+
+            ChartData = barData;
+        }
+
+        private List<BarData> ConvertDataToBarData(List<Lightning> data)
+        {
             var firstLightningDate = data.Min(lightning => lightning.TimeStamp);
             var lastLightningDate = data.Max(lightning => lightning.TimeStamp);
             var deltaLightingDate = lastLightningDate - firstLightningDate;
@@ -50,10 +59,10 @@ namespace SkiaSharpSimpleCharts.Client.Core
                 var startLight = firstLightningDate.AddHours(intervalIndex * interval);
                 var endLight = firstLightningDate.AddHours((intervalIndex + 1) * interval);
                 var lights = data.Where(x => x.TimeStamp > startLight && x.TimeStamp < endLight).ToList();
-                barData.Add(new BarData() { Title = startLight.Hour + ":" + endLight.Hour, Value = lights.Count()});
+                barData.Add(new BarData() { Title = startLight.Hour + ":" + endLight.Hour, Value = lights.Count() });
             }
 
-            ChartData = barData;
+            return barData;
         }
 
         private List<BarData> GetSimulationData()
