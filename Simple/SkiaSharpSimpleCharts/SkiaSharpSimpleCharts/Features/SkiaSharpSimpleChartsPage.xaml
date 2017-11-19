@@ -2,10 +2,10 @@
 <ContentPage 
     xmlns="http://xamarin.com/schemas/2014/forms" 
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-    xmlns:local="clr-namespace:SkiaSharpSimpleCharts" 
+    xmlns:local="clr-namespace:SkiaSharpSimpleCharts.Features" 
     xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
     xmlns:chart="clr-namespace:SkiaSharpSimpleCharts.Controls;assembly=SkiaSharpSimpleCharts"
-    x:Class="SkiaSharpSimpleCharts.SkiaSharpSimpleChartsPage">
+    x:Class="SkiaSharpSimpleCharts.Features.SkiaSharpSimpleChartsPage">
 
     <!-- MASTER CONTAINER -->
     <Grid>
@@ -28,17 +28,24 @@
                 VerticalOptions="Center" 
                 HorizontalOptions="Center" />
 
-            <Grid
-                Grid.Row="1">
+            <!-- STEP 1 -->
+            <chart:SimpleChartView
+                IsVisible="true"
+                x:Name="chart1"
+                Grid.Row="1"
+                HeightRequest="400"
+                VerticalOptions="Center"
+                HorizontalOptions="Fill"/>
 
-                <chart:ChartView
-                    BarData="{Binding ChartData}"
-                    HeightRequest="400"
-                    VerticalOptions="Center"
-                    HorizontalOptions="Fill"
-                    x:Name="bindableBarChart"/>
-                  
-            </Grid>
+            <!-- STEP 3 -->
+            <chart:ChartView
+                IsVisible="false"
+                x:Name="chart2"
+                Grid.Row="1"
+                BarData="{Binding ChartData}"
+                HeightRequest="400"
+                VerticalOptions="Center"
+                HorizontalOptions="Fill"/>
 
             <Button
                 Grid.Row="2"

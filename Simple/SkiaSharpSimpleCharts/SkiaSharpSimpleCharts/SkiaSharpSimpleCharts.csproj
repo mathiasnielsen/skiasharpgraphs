@@ -29,21 +29,19 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="App.xaml" />
-    <EmbeddedResource Include="SkiaSharpSimpleChartsPage.xaml" />
+    <EmbeddedResource Include="Features\SkiaSharpSimpleChartsPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SkiaSharpSimpleChartsPage.xaml.cs">
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controls\ChartView.cs" />
+    <Compile Include="Animation\AnimationTypes.cs" />
+    <Compile Include="Features\SkiaSharpSimpleChartsPage.xaml.cs">
       <DependentUpon>SkiaSharpSimpleChartsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Chart.cs" />
-    <Compile Include="Controls\ChartView.cs" />
-    <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="Animation\AnimationTypes.cs" />
+    <Compile Include="Controls\SimpleChartView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
@@ -83,6 +81,7 @@
   <ItemGroup>
     <Folder Include="Controls\" />
     <Folder Include="Animation\" />
+    <Folder Include="Features\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.5.0.91635\build\portable-win+net45+wp80+win81+wpa81\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.5.0.91635\build\portable-win+net45+wp80+win81+wpa81\Xamarin.Forms.targets')" />

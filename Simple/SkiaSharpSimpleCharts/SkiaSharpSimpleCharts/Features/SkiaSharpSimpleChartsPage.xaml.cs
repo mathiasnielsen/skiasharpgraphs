@@ -1,7 +1,8 @@
-﻿using SkiaSharpSimpleCharts.Client.Core;
+﻿using SkiaSharp;
+using SkiaSharpSimpleCharts.Client.Core;
 using Xamarin.Forms;
 
-namespace SkiaSharpSimpleCharts
+namespace SkiaSharpSimpleCharts.Features
 {
     public partial class SkiaSharpSimpleChartsPage : ContentPage
     {
@@ -14,7 +15,11 @@ namespace SkiaSharpSimpleCharts
             viewModel = new SkiaSharpSimpleChartsViewModel();
             BindingContext = viewModel;
 
-            bindableBarChart.ShowsABar += (sender, e) => InitiateQuickFlash();
+            // STEP 1
+            chart1.SupplyData(viewModel.BarDatas);
+
+            // STEP 2
+            //chart2.ShowsABar += (sender, e) => InitiateQuickFlash();
         }
 
         private async void InitiateQuickFlash()

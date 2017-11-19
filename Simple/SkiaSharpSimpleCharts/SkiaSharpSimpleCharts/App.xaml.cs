@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using SkiaSharpSimpleCharts.Features;
+using Xamarin.Forms;
 
 namespace SkiaSharpSimpleCharts
 {

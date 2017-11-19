@@ -20,12 +20,12 @@ namespace SkiaSharpSimpleCharts.Client.Core
 
             RefreshCommand = new RelayCommand(Refresh);
 
-            ChartData = GetDummyData();
+            BarDatas = GetDummyData();
         }
 
         public RelayCommand RefreshCommand { get; }
 
-        public List<BarData> ChartData
+        public List<BarData> BarDatas
         {
             get { return chartData; }
             set { Set(ref chartData, value); }
@@ -38,13 +38,13 @@ namespace SkiaSharpSimpleCharts.Client.Core
 
         private async Task GetDataFromApiAsync()
         {
-            ChartData = new List<BarData>();
+            BarDatas = new List<BarData>();
 
             var data = await httpRequestExecutor.Get<List<Lightning>>(Api);
 
             var barData = ConvertDataToBarData(data);
 
-            ChartData = barData;
+            BarDatas = barData;
         }
 
         private List<BarData> ConvertDataToBarData(List<Lightning> data)
