@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -7,10 +8,14 @@ namespace SkiaSharpSimpleCharts.Client.Core
 {
     public class SkiaSharpSimpleChartsViewModel : ViewModelBase
     {
-        private List<BarData> _chartData;
+        private const string Api = "http://webapplication220171118090730.azurewebsites.net/getlightning";
+        private HttpRequestExecutor httpRequestExecutor;
+        private List<BarData> chartData;
 
         public SkiaSharpSimpleChartsViewModel()
         {
+            httpRequestExecutor = new HttpRequestExecutor();
+
             RefreshCommand = new RelayCommand(Refresh);
 
             ChartData = GetDummyData();
@@ -20,8 +25,8 @@ namespace SkiaSharpSimpleCharts.Client.Core
 
         public List<BarData> ChartData
         {
-            get { return _chartData; }
-            set { Set(ref _chartData, value); }
+            get { return chartData; }
+            set { Set(ref chartData, value); }
         }
 
         private async void Refresh()
@@ -29,11 +34,26 @@ namespace SkiaSharpSimpleCharts.Client.Core
             await GetDataFromApiAsync();
         }
 
-        private Task GetDataFromApiAsync()
+        private async Task GetDataFromApiAsync()
         {
-            ChartData = GetSimulationData();
+            var data = await httpRequestExecutor.Get<List<Lightning>>(Api);
 
-            return Task.FromResult(true);
+            var firstLightningDate = data.Min(lightning => lightning.TimeStamp);
+            var lastLightningDate = data.Max(lightning => lightning.TimeStamp);
+            var deltaLightingDate = lastLightningDate - firstLightningDate;
+
+            var barData = new List<BarData>();
+            var hours = deltaLightingDate.Hours;
+            for (int intervalIndex = 0; intervalIndex < hours; intervalIndex++)
+            {
+                var interval = 1;
+                var startLight = firstLightningDate.AddHours(intervalIndex * interval);
+                var endLight = firstLightningDate.AddHours((intervalIndex + 1) * interval);
+                var lights = data.Where(x => x.TimeStamp > startLight && x.TimeStamp < endLight).ToList();
+                barData.Add(new BarData() { Title = startLight.Hour + ":" + endLight.Hour, Value = lights.Count()});
+            }
+
+            ChartData = barData;
         }
 
         private List<BarData> GetSimulationData()
