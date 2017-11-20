@@ -27,21 +27,9 @@
                 Text="Welcome to cool data visualization!"
                 VerticalOptions="Center" 
                 HorizontalOptions="Center" />
-
-                <chart:Chart
-                IsVisible="false"
-                x:Name="chartAndreas"
-                    Grid.Row="1"
-                    />
             
             <!-- STEP 1 -->
-            <chart:SimpleChartView
-                IsVisible="false"
-                x:Name="chart1"
-                Grid.Row="1"
-                HeightRequest="400"
-                VerticalOptions="Center"
-                HorizontalOptions="Fill"/>
+            <!-- HERE -->
 
             <!-- STEP 2 -->
             <chart:ChartView

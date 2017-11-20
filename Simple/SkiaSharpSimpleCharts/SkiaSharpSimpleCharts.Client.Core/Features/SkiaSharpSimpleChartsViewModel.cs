@@ -40,11 +40,17 @@ namespace SkiaSharpSimpleCharts.Client.Core
         {
             BarDatas = new List<BarData>();
 
-            var data = await httpRequestExecutor.Get<List<Lightning>>(Api);
+            try
+            {
+                var data = await httpRequestExecutor.Get<List<Lightning>>(Api);
+                var barData = ConvertDataToBarData(data);
 
-            var barData = ConvertDataToBarData(data);
-
-            BarDatas = barData;
+                BarDatas = barData;   
+            }
+            catch
+            {
+                BarDatas = GetDummyData();
+            }
         }
 
         private List<BarData> ConvertDataToBarData(List<Lightning> data)

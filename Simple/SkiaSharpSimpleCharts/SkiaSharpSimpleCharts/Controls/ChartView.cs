@@ -60,7 +60,7 @@ namespace SkiaSharpSimpleCharts.Controls
         public ChartView()
         {
             backgroundColor = SKColors.White;
-            animationType = AnimationTypes.Lightning;
+            animationType = AnimationTypes.SlideUp;
 
             PaintSurface += OnPaintCanvas;
         }
