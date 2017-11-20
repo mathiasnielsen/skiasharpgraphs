@@ -28,9 +28,15 @@
                 VerticalOptions="Center" 
                 HorizontalOptions="Center" />
 
+                <chart:Chart
+                IsVisible="false"
+                x:Name="chartAndreas"
+                    Grid.Row="1"
+                    />
+            
             <!-- STEP 1 -->
             <chart:SimpleChartView
-                IsVisible="true"
+                IsVisible="false"
                 x:Name="chart1"
                 Grid.Row="1"
                 HeightRequest="400"
@@ -39,10 +45,10 @@
 
             <!-- STEP 2 -->
             <chart:ChartView
-                IsVisible="false"
+                IsVisible="true"
                 x:Name="chart2"
                 Grid.Row="1"
-                BarData="{Binding ChartData}"
+                BarData="{Binding BarDatas}"
                 HeightRequest="400"
                 VerticalOptions="Center"
                 HorizontalOptions="Fill"/>

@@ -15,22 +15,24 @@ namespace SkiaSharpSimpleCharts.Features
             viewModel = new SkiaSharpSimpleChartsViewModel();
             BindingContext = viewModel;
 
+            chartAndreas.InsertData(viewModel.BarDatas);
+
             // STEP 1
             chart1.SupplyData(viewModel.BarDatas);
 
             // STEP 2
-            //chart2.ShowsABar += (sender, e) => InitiateQuickFlash();
+            chart2.ShowsABar += (sender, e) => InitiateQuickFlash();
         }
 
-        //private async void InitiateQuickFlash()
-        //{
-        //    FlashView.IsVisible = true;
-        //    FlashView.IsEnabled = false;
-        //    FlashView.Opacity = 1;
+        private async void InitiateQuickFlash()
+        {
+            FlashView.IsVisible = true;
+            FlashView.IsEnabled = false;
+            FlashView.Opacity = 1;
 
-        //    await FlashView.FadeTo(0, 400, null);
+            await FlashView.FadeTo(0, 400, null);
 
-        //    Device.BeginInvokeOnMainThread(() => FlashView.IsVisible = false);
-        //}
+            Device.BeginInvokeOnMainThread(() => FlashView.IsVisible = false);
+        }
     }
 }

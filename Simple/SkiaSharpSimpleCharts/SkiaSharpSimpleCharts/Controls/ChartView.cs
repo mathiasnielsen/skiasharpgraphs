@@ -27,7 +27,13 @@ namespace SkiaSharpSimpleCharts.Controls
         private readonly SKPaint BarPaint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
-            Color = SKColors.Yellow
+            Color = SKColors.Green.WithAlpha(100)
+        };
+
+        private readonly SKPaint BarBackgroundPaint = new SKPaint
+        {
+            Style = SKPaintStyle.Fill,
+            Color = SKColors.Green.WithAlpha(60)
         };
 
         private readonly SKPaint BarStrokePaint = new SKPaint
@@ -53,7 +59,7 @@ namespace SkiaSharpSimpleCharts.Controls
 
         public ChartView()
         {
-            backgroundColor = SKColors.LightGray;
+            backgroundColor = SKColors.White;
             animationType = AnimationTypes.Lightning;
 
             PaintSurface += OnPaintCanvas;
@@ -173,6 +179,7 @@ namespace SkiaSharpSimpleCharts.Controls
                 int barHeight = 0;
                 switch (animationType)
                 {
+                    case AnimationTypes.None:
                     case AnimationTypes.Lightning:
                         barHeight = (int)(procentageHeight * barContentHeight);
                         break;
@@ -187,11 +194,12 @@ namespace SkiaSharpSimpleCharts.Controls
                 var startY = info.Height - HeightMargin - BarTitleTextHeight;
 
                 // Apply a gradient shader
-                ApplyGradientShader(startY, barHeight);
+                //ApplyGradientShader(startY, barHeight);
 
                 // Draw bars
+                canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barContentHeight), BarBackgroundPaint);
                 canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), BarPaint);
-                canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), BarStrokePaint);
+                //canvas.DrawRect(SKRect.Create(startX, startY, barWidth, -barHeight), BarStrokePaint);
 
                 // Find text start positions
                 var startTextX = startX + (barWidth / 2);

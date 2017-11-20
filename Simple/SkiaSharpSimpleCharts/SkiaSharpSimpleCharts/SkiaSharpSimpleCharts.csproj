@@ -42,6 +42,7 @@
       <DependentUpon>SkiaSharpSimpleChartsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\SimpleChartView.cs" />
+    <Compile Include="Controls\Chart.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Xamarin.Forms.Core">
