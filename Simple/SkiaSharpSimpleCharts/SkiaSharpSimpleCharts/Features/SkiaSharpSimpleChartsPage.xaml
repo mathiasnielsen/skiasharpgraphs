@@ -32,14 +32,14 @@
             <!-- HERE -->
 
             <!-- STEP 2 -->
-            <chart:ChartView
+<!--            <chart:ChartView
                 IsVisible="true"
                 x:Name="chart2"
                 Grid.Row="1"
                 BarData="{Binding BarDatas}"
                 HeightRequest="400"
                 VerticalOptions="Center"
-                HorizontalOptions="Fill"/>
+                HorizontalOptions="Fill"/>-->
 
             <Button
                 Grid.Row="2"
